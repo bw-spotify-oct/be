@@ -4,6 +4,7 @@ import com.lambdaschool.spotifysongsuggester.exceptions.ResourceFoundException;
 import com.lambdaschool.spotifysongsuggester.exceptions.ResourceNotFoundException;
 import com.lambdaschool.spotifysongsuggester.logging.Loggable;
 import com.lambdaschool.spotifysongsuggester.models.User;
+import com.lambdaschool.spotifysongsuggester.repositories.SongRepository;
 import com.lambdaschool.spotifysongsuggester.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,9 @@ public class UserServiceImpl implements UserDetailsService, UserService
 
     @Autowired
     private UserRepository userrepos;
+
+    @Autowired
+    private SongRepository songrepos;
 
     @Transactional
     @Override
@@ -66,7 +70,7 @@ public class UserServiceImpl implements UserDetailsService, UserService
 
     @Transactional
     @Override
-    public void delete(long id)
+    public void delete(long id) throws ResourceNotFoundException
     {
         userrepos.findById(id)
                  .orElseThrow(() -> new ResourceNotFoundException("User id " + id + " not found!"));
@@ -96,6 +100,7 @@ public class UserServiceImpl implements UserDetailsService, UserService
         User newUser = new User();
         newUser.setUsername(user.getUsername().toLowerCase());
         newUser.setPasswordNoEncrypt(user.getPassword());
+        newUser.setFavorites(user.getFavorites());
 
         return userrepos.save(newUser);
     }
@@ -124,10 +129,83 @@ public class UserServiceImpl implements UserDetailsService, UserService
                 currentUser.setPasswordNoEncrypt(user.getPassword());
             }
 
+            if (user.getFavorites() != null)
+            {
+                currentUser.setFavorites(user.getFavorites());
+            }
+
             return userrepos.save(currentUser);
         } else
         {
             throw new ResourceNotFoundException(id + " Not current user");
         }
     }
+
+    @Transactional
+    @Override
+    public void addSongToFav(long userid, long songid) throws ResourceNotFoundException, ResourceFoundException
+    {
+        userrepos.findById(userid)
+                .orElseThrow(() -> new ResourceNotFoundException("User id " + userid + " not found!"));
+
+        songrepos.findById(songid)
+                .orElseThrow(() -> new ResourceNotFoundException("Song id " + songid + " not found!"));
+
+        if(userrepos.checkSonginFavorites(userid, songid).getCount() <=0)
+        {
+            userrepos.insertSongintoFavorites(userid, songid);
+        }
+        else
+        {
+            throw new ResourceFoundException("Song already in User Favorites");
+        }
+    }
+
+    @Transactional
+    @Override
+    public void deleteSongFromFav(long userid, long songid) throws ResourceNotFoundException
+    {
+        if(userrepos.checkSonginFavorites(userid, songid).getCount() <=0)
+        {
+            throw new ResourceNotFoundException("Song not in User Favorites");
+
+        }
+        else
+        {
+            userrepos.deleteSongfromFavorites(userid, songid);
+        }
+    }
+
+//    @Transactional
+//    @Override
+//    public void addSongToFav(long userid, String trackid) throws ResourceNotFoundException, ResourceFoundException
+//    {
+//        userrepos.findById(userid)
+//                .orElseThrow(() -> new ResourceNotFoundException("User id " + userid + " not found!"));
+//
+//
+//        if(userrepos.checkSonginFavorites(userid, trackid).getCount() <=0)
+//        {
+//            userrepos.insertSongintoFavorites(userid, trackid);
+//        }
+//        else
+//        {
+//            throw new ResourceFoundException("Song already in User Favorites");
+//        }
+//    }
+//
+//    @Transactional
+//    @Override
+//    public void deleteSongFromFav(long userid, String trackid) throws ResourceNotFoundException
+//    {
+//        if(userrepos.checkSonginFavorites(userid, trackid).getCount() <=0)
+//        {
+//            throw new ResourceNotFoundException("Song not in User Favorites");
+//
+//        }
+//        else
+//        {
+//            userrepos.deleteSongfromFavorites(userid, trackid);
+//        }
+//    }
 }
