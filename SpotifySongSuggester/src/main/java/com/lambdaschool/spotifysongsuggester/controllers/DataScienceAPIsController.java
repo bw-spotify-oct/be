@@ -1,10 +1,10 @@
 package com.lambdaschool.spotifysongsuggester.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lambdaschool.spotifysongsuggester.logging.Loggable;
-import com.lambdaschool.spotifysongsuggester.models.DSSearchSong;
-import com.lambdaschool.spotifysongsuggester.models.DSSongWithImg;
-import com.lambdaschool.spotifysongsuggester.models.ErrorDetail;
-import com.lambdaschool.spotifysongsuggester.models.Song;
+import com.lambdaschool.spotifysongsuggester.models.*;
+import com.lambdaschool.spotifysongsuggester.services.ImageSongService;
 import com.lambdaschool.spotifysongsuggester.services.SongService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,13 +37,9 @@ public class DataScienceAPIsController
 
     @Autowired
     private SongService songService;
+    private ImageSongService imageSongService;
 
-    // taken from https://openlibrary.org/dev/docs/api/books
-    // returns a list of books - you can include multiple ISBNs in a single request
-    // This API returns a map instead of the standard list
-    //
     // https://spotify-song-suggester-app.herokuapp.com/data/search/{search}
-
     @ApiOperation(value = "Retrieves Songs by Search Query.", response = Song.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Songs Found", response = Song.class),
@@ -145,6 +142,44 @@ public class DataScienceAPIsController
         System.out.println(ourSongs);
         return new ResponseEntity<>(ourSongs,
                 HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Retrieves Songs with Album Art Given Search.", response = Song.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Songs Found", response = Song.class),
+            @ApiResponse(code = 404, message = "Songs Not Found, Internal Data Server Error", response = ErrorDetail.class
+            )})
+    @GetMapping(value = "/search/images/{search}",
+            produces = {"application/json"})
+    public ResponseEntity<?> SongsWithImagesGivenSearch(HttpServletRequest request, @PathVariable String search) throws IOException
+    {
+        logger.trace(request.getMethod().toUpperCase() + " " + request.getRequestURI() + " accessed");
+
+        String requestURL = "https://spotify-api-helper.herokuapp.com/songs_with_pic/DReaI4d55IIaiD6P9/" + search;
+
+        ParameterizedTypeReference<String> responseType = new ParameterizedTypeReference<>()
+        {
+        };
+        ResponseEntity<String> responseEntity = restTemplate.exchange(requestURL, HttpMethod.GET, null, responseType);
+        String jsonString = responseEntity.getBody();
+
+        ObjectMapper mapper = new ObjectMapper();
+        List<DSSongWithImg> songWithImgList = mapper.readValue(jsonString, new TypeReference<List<DSSongWithImg>>() {});
+
+        List <ImageSong> newSongs = new ArrayList<>();
+
+        for( DSSongWithImg s : songWithImgList)
+        {
+            ImageSong s1 = new ImageSong(s.getId(), s.getSong_name(), s.getArtist(), s.getUri(), s.getLarge_image(), s.getMed_image(), s.getSmall_image());
+            newSongs.add(s1);
+            imageSongService.save(s1);
+        }
+
+        System.out.println(songWithImgList);
+        System.out.println(newSongs);
+        return new ResponseEntity<>(newSongs,
+                HttpStatus.OK);
+
     }
 
 

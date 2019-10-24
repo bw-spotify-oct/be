@@ -38,6 +38,11 @@ public class User extends Auditable
     @JsonIgnoreProperties("user")
     private List<Favorite> favorites = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user",
+            cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("user")
+    private List<FavoriteImageSong> favoriteImageSongs = new ArrayList<>();
+
     public User()
     {
     }
@@ -51,11 +56,12 @@ public class User extends Auditable
 
     public User(String username,
                 String password,
-                List<Favorite> favorites)
+                List<Favorite> favorites, List<FavoriteImageSong> favoriteImageSongs)
     {
         this.username = username;
         this.password = password;
         this.favorites = favorites;
+        this.favoriteImageSongs = favoriteImageSongs;
     }
 
     public long getUserid()
@@ -120,6 +126,16 @@ public class User extends Auditable
     public void setFavorites(List<Favorite> favorites)
     {
         this.favorites = favorites;
+    }
+
+    public List<FavoriteImageSong> getFavoriteImageSongs()
+    {
+        return favoriteImageSongs;
+    }
+
+    public void setFavoriteImageSongs(List<FavoriteImageSong> favoriteImageSongs)
+    {
+        this.favoriteImageSongs = favoriteImageSongs;
     }
 
     @Override

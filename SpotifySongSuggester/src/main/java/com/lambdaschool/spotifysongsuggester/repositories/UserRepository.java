@@ -32,4 +32,20 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>
             nativeQuery = true)
     void insertSongintoFavorites(long userid,
                                  long songid);
+
+    @Query(value = "SELECT COUNT(*) as count FROM favoriteimagesongs WHERE userid = :userid AND imagesongid = :imagesongid", nativeQuery = true)
+    JustTheCount checkImageSonginFavorites(long userid, long imagesongid);
+
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM favoriteimagesongs WHERE userid = :userid AND imagesongid = :imagesongid")
+    void deleteImageSongfromFavorites(long userid,
+                                      long imagesongid);
+
+    @Transactional
+    @Modifying
+    @Query(value = "INSERT INTO favoriteimagesongs(userid, imagesongid) VALUES (:userid, :imagesongid)",
+            nativeQuery = true)
+    void insertImageSongintoFavorites(long userid,
+                                      long imagesongid);
 }

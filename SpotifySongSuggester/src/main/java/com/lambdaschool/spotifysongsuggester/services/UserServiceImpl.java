@@ -3,8 +3,10 @@ package com.lambdaschool.spotifysongsuggester.services;
 import com.lambdaschool.spotifysongsuggester.exceptions.ResourceFoundException;
 import com.lambdaschool.spotifysongsuggester.exceptions.ResourceNotFoundException;
 import com.lambdaschool.spotifysongsuggester.logging.Loggable;
+import com.lambdaschool.spotifysongsuggester.models.ImageSong;
 import com.lambdaschool.spotifysongsuggester.models.Song;
 import com.lambdaschool.spotifysongsuggester.models.User;
+import com.lambdaschool.spotifysongsuggester.repositories.ImageSongRepository;
 import com.lambdaschool.spotifysongsuggester.repositories.SongRepository;
 import com.lambdaschool.spotifysongsuggester.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,9 @@ public class UserServiceImpl implements UserDetailsService, UserService
 
     @Autowired
     private SongRepository songrepos;
+
+    @Autowired
+    private ImageSongRepository imagesongrepos;
 
     @Transactional
     @Override
@@ -175,6 +180,41 @@ public class UserServiceImpl implements UserDetailsService, UserService
         else
         {
             userrepos.deleteSongfromFavorites(userid, newSong.getSongid());
+        }
+    }
+
+    @Transactional
+    @Override
+    public void addImageSongToFav(long userid, String trackid) throws ResourceNotFoundException, ResourceFoundException
+    {
+        userrepos.findById(userid)
+                .orElseThrow(() -> new ResourceNotFoundException("User id " + userid + " not found!"));
+
+        ImageSong imageSong = imagesongrepos.findImageSongByTrackid(trackid);
+
+        if(userrepos.checkImageSonginFavorites(userid, imageSong.getImagesongid()).getCount() <=0)
+        {
+            userrepos.insertImageSongintoFavorites(userid, imageSong.getImagesongid());
+        }
+        else
+        {
+            throw new ResourceFoundException("Song already in User Favorites");
+        }
+    }
+
+    @Transactional
+    @Override
+    public void deleteImageSongFromFav(long userid, String trackid) throws ResourceNotFoundException
+    {
+        ImageSong imageSong = imagesongrepos.findImageSongByTrackid(trackid);
+
+        if(userrepos.checkImageSonginFavorites(userid, imageSong.getImagesongid()).getCount() <=0)
+        {
+            throw new ResourceNotFoundException("Song not in User Favorites");
+        }
+        else
+        {
+            userrepos.deleteImageSongfromFavorites(userid, imageSong.getImagesongid());
         }
     }
 }

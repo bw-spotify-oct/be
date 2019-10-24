@@ -1,10 +1,7 @@
 package com.lambdaschool.spotifysongsuggester.controllers;
 
 import com.lambdaschool.spotifysongsuggester.logging.Loggable;
-import com.lambdaschool.spotifysongsuggester.models.ErrorDetail;
-import com.lambdaschool.spotifysongsuggester.models.Favorite;
-import com.lambdaschool.spotifysongsuggester.models.Song;
-import com.lambdaschool.spotifysongsuggester.models.User;
+import com.lambdaschool.spotifysongsuggester.models.*;
 import com.lambdaschool.spotifysongsuggester.services.SongService;
 import com.lambdaschool.spotifysongsuggester.services.UserService;
 import io.swagger.annotations.*;
@@ -76,35 +73,6 @@ public class UserController
 
         User u = userService.findUserById(userId);
         return new ResponseEntity<>(u,
-                HttpStatus.OK);
-    }
-
-    // http://localhost:2019/users/user/name/cinnamon
-    @GetMapping(value = "/user/name/{userName}",
-            produces = {"application/json"})
-    public ResponseEntity<?> getUserByName(HttpServletRequest request,
-                                           @PathVariable
-                                                   String userName)
-    {
-        logger.trace(request.getMethod()
-                .toUpperCase() + " " + request.getRequestURI() + " accessed");
-
-        User u = userService.findByName(userName);
-        return new ResponseEntity<>(u,
-                HttpStatus.OK);
-    }
-
-    // http://localhost:2019/users/getusername
-    @GetMapping(value = "/getusername",
-            produces = {"application/json"})
-    @ResponseBody
-    public ResponseEntity<?> getCurrentUserName(HttpServletRequest request,
-                                                Authentication authentication)
-    {
-        logger.trace(request.getMethod()
-                .toUpperCase() + " " + request.getRequestURI() + " accessed");
-
-        return new ResponseEntity<>(authentication.getPrincipal(),
                 HttpStatus.OK);
     }
 
@@ -216,6 +184,66 @@ public class UserController
         for(Favorite f: u.getFavorites())
         {
             songs.add(f.getSong());
+        }
+
+        return new ResponseEntity<>(songs,
+                HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Saves Song with Images to User Favorites.", response = void.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Song Added to Favorites Successfully", response = void.class),
+            @ApiResponse(code = 404, message = "Song or User Not Found", response = ErrorDetail.class),
+            @ApiResponse(code = 500, message = "Error Adding Song to Favorites", response = ErrorDetail.class
+            )})
+    @PostMapping("user/song/images/{trackid}")
+    public ResponseEntity<?> postImageSongtoFavorites(HttpServletRequest request,
+                                                      @PathVariable String trackid, Authentication authentication)
+    {
+        logger.trace(request.getMethod()
+                .toUpperCase() + " " + request.getRequestURI() + " accessed");
+
+        User u = userService.findByName(authentication.getName());
+
+        userService.addImageSongToFav(u.getUserid(), trackid);
+
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @ApiOperation(value = "Deletes a Song with Images from Favorites", response = void.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Song Deleted Successfully", response = void.class),
+            @ApiResponse(code = 500, message = "Error deleting Song", response = ErrorDetail.class
+            )})
+    @DeleteMapping("/user/song/images/{trackid}")
+    public ResponseEntity<?> deleteImageSongFromFavorites(HttpServletRequest request, Authentication authentication,
+                                                          @PathVariable String trackid)
+    {
+        logger.trace(request.getMethod()
+                .toUpperCase() + " " + request.getRequestURI() + " accessed");
+
+        User u = userService.findByName(authentication.getName());
+
+        userService.deleteImageSongFromFav(u.getUserid(), trackid);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // http://localhost:2021/users/favorites/images
+    @GetMapping(value = "/user/favorites/images",
+            produces = {"application/json"})
+    public ResponseEntity<?> getCurrentUserFavoritesWithImages(HttpServletRequest request,
+                                                               Authentication authentication)
+    {
+        logger.trace(request.getMethod()
+                .toUpperCase() + " " + request.getRequestURI() + " accessed");
+
+        User u = userService.findByName(authentication.getName());
+
+        List<ImageSong> songs = new ArrayList<>();
+
+        for(FavoriteImageSong f: u.getFavoriteImageSongs())
+        {
+            songs.add(f.getImagesong());
         }
 
         return new ResponseEntity<>(songs,

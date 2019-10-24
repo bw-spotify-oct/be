@@ -29,4 +29,8 @@ public interface UserService
     void addSongToFav(long userid, String trackid);
 
     void deleteSongFromFav(long userid, String trackid);
+
+    void addImageSongToFav(long userid, String trackid);
+
+    void deleteImageSongFromFav(long userid, String trackid);
 }
