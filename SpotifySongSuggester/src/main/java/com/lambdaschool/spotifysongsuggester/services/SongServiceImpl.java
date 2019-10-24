@@ -4,16 +4,9 @@ import com.lambdaschool.spotifysongsuggester.exceptions.ResourceFoundException;
 import com.lambdaschool.spotifysongsuggester.exceptions.ResourceNotFoundException;
 import com.lambdaschool.spotifysongsuggester.logging.Loggable;
 import com.lambdaschool.spotifysongsuggester.models.Song;
-import com.lambdaschool.spotifysongsuggester.models.User;
 import com.lambdaschool.spotifysongsuggester.repositories.SongRepository;
-import com.lambdaschool.spotifysongsuggester.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,18 +20,6 @@ public class SongServiceImpl implements SongService
 
     @Autowired
     private SongRepository songrepos;
-
-//    @Override
-//    public Song findByName(String name)
-//    {
-//        Song song = songrepos.findSongBySong_name(name.toLowerCase());
-//
-//        if (song == null)
-//        {
-//            throw new ResourceNotFoundException("Song name " + name + " not found!");
-//        }
-//        return song;
-//    }
 
     @Override
     public Song findSongByTrackId(String id) throws ResourceNotFoundException
@@ -80,6 +61,7 @@ public class SongServiceImpl implements SongService
         song1.setSongid(song.getSongid());
         song1.setArtist(song.getArtist());
         song1.setSong_name(song.getSong_name());
+        song1.setUri(song.getUri());
 
         return songrepos.save(song1);
     }
@@ -93,12 +75,6 @@ public class SongServiceImpl implements SongService
                 .forEachRemaining(list::add);
         return list;
     }
-
-//    @Override
-//    public List<Song> findByNameContaining(String name, Pageable pageable)
-//    {
-//        return songrepos.findSongBySong_nameContainingIgnoreCase(name.toLowerCase(), pageable);
-//    }
 
     @Transactional
     @Override
@@ -116,6 +92,11 @@ public class SongServiceImpl implements SongService
             if(song.getSong_name() != null)
             {
                 currentSong.setSong_name(song.getSong_name().toLowerCase());
+            }
+
+            if(song.getUri() != null)
+            {
+                currentSong.setUri(song.getUri().toLowerCase());
             }
 
             return songrepos.save(currentSong);

@@ -34,8 +34,8 @@ public class SongController
 
     @ApiOperation(value = "Deletes a Song by Id", response = void.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Author Deleted Successfully", response = void.class),
-            @ApiResponse(code = 500, message = "Error deleting Author", response = ErrorDetail.class
+            @ApiResponse(code = 200, message = "Song Deleted Successfully", response = void.class),
+            @ApiResponse(code = 500, message = "Error deleting Song", response = ErrorDetail.class
             )})
     @DeleteMapping("/song/{songid}")
     public ResponseEntity<?> deleteSongById(HttpServletRequest request, @PathVariable long songid)
@@ -48,8 +48,8 @@ public class SongController
 
     @ApiOperation(value = "Retrieves a Song by Track Id.", response = Song.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Author Found", response = Song.class),
-            @ApiResponse(code = 404, message = "Author Not Found", response = ErrorDetail.class
+            @ApiResponse(code = 200, message = "Song Found", response = Song.class),
+            @ApiResponse(code = 404, message = "Song Not Found", response = ErrorDetail.class
             )})
     @GetMapping(value = "/track/{trackid}",
             produces = {"application/json"})
@@ -76,8 +76,8 @@ public class SongController
         Song newSong = songService.save(song);
 
         HttpHeaders responseHeaders = new HttpHeaders();
-        URI newAuthorURI = ServletUriComponentsBuilder.fromCurrentRequest().path("/{authorid}").buildAndExpand(newSong.getSongid()).toUri();
-        responseHeaders.setLocation(newAuthorURI);
+        URI newSongURI = ServletUriComponentsBuilder.fromCurrentRequest().path("/{songid}").buildAndExpand(newSong.getSongid()).toUri();
+        responseHeaders.setLocation(newSongURI);
 
         return new ResponseEntity<>(null, responseHeaders, HttpStatus.CREATED);
     }

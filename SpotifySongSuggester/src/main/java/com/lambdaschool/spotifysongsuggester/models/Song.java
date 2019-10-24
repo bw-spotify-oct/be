@@ -27,20 +27,24 @@ public class Song extends Auditable
     @ApiModelProperty(name = "artist", value = "Song Artist", example = "Artist Name")
     private String artist;
 
+    @ApiModelProperty(name = "uri", value = "Song URI", example = "spotify:track:trackid")
+    private String uri;
+
     @OneToMany(mappedBy = "song",
             cascade = CascadeType.ALL)
     @JsonIgnoreProperties("song")
-    private List<Favorites> favorites= new ArrayList<>();
+    private List<Favorite> favorites= new ArrayList<>();
 
     public Song()
     {
     }
 
-    public Song(String trackid, String song_name, String artist)
+    public Song(String trackid, String song_name, String artist, String uri)
     {
         this.trackid = trackid;
         this.song_name = song_name;
         this.artist = artist;
+        this.uri = uri;
     }
 
     public long getSongid()
@@ -83,6 +87,15 @@ public class Song extends Auditable
         this.artist = artist;
     }
 
+    public String getUri()
+    {
+        return uri;
+    }
+
+    public void setUri(String uri)
+    {
+        this.uri = uri;
+    }
 //    public List<Favorites> getFavorites()
 //    {
 //        return favorites;
@@ -93,14 +106,16 @@ public class Song extends Auditable
 //        this.favorites = favorites;
 //    }
 
+
     @Override
     public String toString()
     {
         return "Song{" +
-                "trackid='" + trackid + '\'' +
-                ", songid='" + songid + '\'' +
+                "songid=" + songid +
+                ", trackid='" + trackid + '\'' +
                 ", song_name='" + song_name + '\'' +
                 ", artist='" + artist + '\'' +
+                ", uri='" + uri + '\'' +
 //                ", favorites=" + favorites +
                 '}';
     }

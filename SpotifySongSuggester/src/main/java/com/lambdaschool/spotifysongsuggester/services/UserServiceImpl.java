@@ -3,6 +3,7 @@ package com.lambdaschool.spotifysongsuggester.services;
 import com.lambdaschool.spotifysongsuggester.exceptions.ResourceFoundException;
 import com.lambdaschool.spotifysongsuggester.exceptions.ResourceNotFoundException;
 import com.lambdaschool.spotifysongsuggester.logging.Loggable;
+import com.lambdaschool.spotifysongsuggester.models.Song;
 import com.lambdaschool.spotifysongsuggester.models.User;
 import com.lambdaschool.spotifysongsuggester.repositories.SongRepository;
 import com.lambdaschool.spotifysongsuggester.repositories.UserRepository;
@@ -40,14 +41,14 @@ public class UserServiceImpl implements UserDetailsService, UserService
             throw new UsernameNotFoundException("Invalid username or password.");
         }
         return new org.springframework.security.core.userdetails.User(user.getUsername().toLowerCase(),
-                                                                      user.getPassword(), user.getAuthority()
+                user.getPassword(), user.getAuthority()
         );
     }
 
     public User findUserById(long id) throws ResourceNotFoundException
     {
         return userrepos.findById(id)
-                        .orElseThrow(() -> new ResourceNotFoundException("User id " + id + " not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("User id " + id + " not found!"));
     }
 
     @Override
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserDetailsService, UserService
                                            Pageable pageable)
     {
         return userrepos.findByUsernameContainingIgnoreCase(username.toLowerCase(),
-                                                            pageable);
+                pageable);
     }
 
     @Override
@@ -63,8 +64,8 @@ public class UserServiceImpl implements UserDetailsService, UserService
     {
         List<User> list = new ArrayList<>();
         userrepos.findAll(pageable)
-                 .iterator()
-                 .forEachRemaining(list::add);
+                .iterator()
+                .forEachRemaining(list::add);
         return list;
     }
 
@@ -73,7 +74,7 @@ public class UserServiceImpl implements UserDetailsService, UserService
     public void delete(long id) throws ResourceNotFoundException
     {
         userrepos.findById(id)
-                 .orElseThrow(() -> new ResourceNotFoundException("User id " + id + " not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("User id " + id + " not found!"));
         userrepos.deleteById(id);
     }
 
@@ -111,7 +112,7 @@ public class UserServiceImpl implements UserDetailsService, UserService
                        long id)
     {
         Authentication authentication = SecurityContextHolder.getContext()
-                                                             .getAuthentication();
+                .getAuthentication();
 
         User authenticatedUser = userrepos.findByUsername(authentication.getName());
 
@@ -143,17 +144,16 @@ public class UserServiceImpl implements UserDetailsService, UserService
 
     @Transactional
     @Override
-    public void addSongToFav(long userid, long songid) throws ResourceNotFoundException, ResourceFoundException
+    public void addSongToFav(long userid, String trackid) throws ResourceNotFoundException, ResourceFoundException
     {
         userrepos.findById(userid)
                 .orElseThrow(() -> new ResourceNotFoundException("User id " + userid + " not found!"));
 
-        songrepos.findById(songid)
-                .orElseThrow(() -> new ResourceNotFoundException("Song id " + songid + " not found!"));
+        Song newSong = songrepos.findSongByTrackid(trackid);
 
-        if(userrepos.checkSonginFavorites(userid, songid).getCount() <=0)
+        if(userrepos.checkSonginFavorites(userid, newSong.getSongid()).getCount() <=0)
         {
-            userrepos.insertSongintoFavorites(userid, songid);
+            userrepos.insertSongintoFavorites(userid, newSong.getSongid());
         }
         else
         {
@@ -163,49 +163,18 @@ public class UserServiceImpl implements UserDetailsService, UserService
 
     @Transactional
     @Override
-    public void deleteSongFromFav(long userid, long songid) throws ResourceNotFoundException
+    public void deleteSongFromFav(long userid, String trackid) throws ResourceNotFoundException
     {
-        if(userrepos.checkSonginFavorites(userid, songid).getCount() <=0)
+        Song newSong = songrepos.findSongByTrackid(trackid);
+
+        if(userrepos.checkSonginFavorites(userid, newSong.getSongid()).getCount() <=0)
         {
             throw new ResourceNotFoundException("Song not in User Favorites");
 
         }
         else
         {
-            userrepos.deleteSongfromFavorites(userid, songid);
+            userrepos.deleteSongfromFavorites(userid, newSong.getSongid());
         }
     }
-
-//    @Transactional
-//    @Override
-//    public void addSongToFav(long userid, String trackid) throws ResourceNotFoundException, ResourceFoundException
-//    {
-//        userrepos.findById(userid)
-//                .orElseThrow(() -> new ResourceNotFoundException("User id " + userid + " not found!"));
-//
-//
-//        if(userrepos.checkSonginFavorites(userid, trackid).getCount() <=0)
-//        {
-//            userrepos.insertSongintoFavorites(userid, trackid);
-//        }
-//        else
-//        {
-//            throw new ResourceFoundException("Song already in User Favorites");
-//        }
-//    }
-//
-//    @Transactional
-//    @Override
-//    public void deleteSongFromFav(long userid, String trackid) throws ResourceNotFoundException
-//    {
-//        if(userrepos.checkSonginFavorites(userid, trackid).getCount() <=0)
-//        {
-//            throw new ResourceNotFoundException("Song not in User Favorites");
-//
-//        }
-//        else
-//        {
-//            userrepos.deleteSongfromFavorites(userid, trackid);
-//        }
-//    }
 }
