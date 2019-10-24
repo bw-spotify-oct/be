@@ -37,7 +37,7 @@ public class SongController
             @ApiResponse(code = 200, message = "Author Deleted Successfully", response = void.class),
             @ApiResponse(code = 500, message = "Error deleting Author", response = ErrorDetail.class
             )})
-    @DeleteMapping("/{songid}")
+    @DeleteMapping("/song/{songid}")
     public ResponseEntity<?> deleteSongById(HttpServletRequest request, @PathVariable long songid)
     {
         logger.info(request.getMethod() + " " + request.getRequestURI() + " accessed");
@@ -46,7 +46,7 @@ public class SongController
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Retrieves a Song by Id.", response = Song.class)
+    @ApiOperation(value = "Retrieves a Song by Track Id.", response = Song.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Author Found", response = Song.class),
             @ApiResponse(code = 404, message = "Author Not Found", response = ErrorDetail.class
