@@ -66,7 +66,7 @@ public class DataScienceAPIsController
                 responseType);
 
         List<DSSearchSong> ourSongs = responseEntity.getBody();
-
+      
         List <Song> newSongs = new ArrayList<>();
 
         for( DSSearchSong s : ourSongs)
@@ -127,7 +127,8 @@ public class DataScienceAPIsController
             )})
     @GetMapping(value = "/recs/search/{search}",
             produces = {"application/json"})
-    public ResponseEntity<?> RecsViaSearch(HttpServletRequest request, @PathVariable String search) throws IOException
+
+    public ResponseEntity<?> searchViaSearch(HttpServletRequest request, @PathVariable String search) throws IOException
     {
         logger.trace(request.getMethod().toUpperCase() + " " + request.getRequestURI() + " accessed");
 

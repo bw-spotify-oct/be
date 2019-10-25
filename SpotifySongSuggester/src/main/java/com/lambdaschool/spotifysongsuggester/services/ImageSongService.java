@@ -19,5 +19,5 @@ public interface ImageSongService
     ImageSong save(ImageSong imageSong);
 
     ImageSong update(ImageSong imageSong,
-                     long id);
+                long id);
 }

@@ -147,6 +147,41 @@ public class UserServiceImpl implements UserDetailsService, UserService
         }
     }
 
+//    @Transactional
+//    @Override
+//    public void addSongToFav(long userid, long songid) throws ResourceNotFoundException, ResourceFoundException
+//    {
+//        userrepos.findById(userid)
+//                .orElseThrow(() -> new ResourceNotFoundException("User id " + userid + " not found!"));
+//
+//        songrepos.findById(songid)
+//                .orElseThrow(() -> new ResourceNotFoundException("Song id " + songid + " not found!"));
+//
+//        if(userrepos.checkSonginFavorites(userid, songid).getCount() <=0)
+//        {
+//            userrepos.insertSongintoFavorites(userid, songid);
+//        }
+//        else
+//        {
+//            throw new ResourceFoundException("Song already in User Favorites");
+//        }
+//    }
+//
+//    @Transactional
+//    @Override
+//    public void deleteSongFromFav(long userid, long songid) throws ResourceNotFoundException
+//    {
+//        if(userrepos.checkSonginFavorites(userid, songid).getCount() <=0)
+//        {
+//            throw new ResourceNotFoundException("Song not in User Favorites");
+//
+//        }
+//        else
+//        {
+//            userrepos.deleteSongfromFavorites(userid, songid);
+//        }
+//    }
+
     @Transactional
     @Override
     public void addSongToFav(long userid, String trackid) throws ResourceNotFoundException, ResourceFoundException
