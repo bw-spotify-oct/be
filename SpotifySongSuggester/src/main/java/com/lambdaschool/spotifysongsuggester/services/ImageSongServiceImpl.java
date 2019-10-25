@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Loggable
+@Transactional
 @Service(value = "imageSongService")
 public class ImageSongServiceImpl implements ImageSongService
 {
