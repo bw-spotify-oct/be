@@ -3,7 +3,6 @@ package com.lambdaschool.spotifysongsuggester.services;
 import com.lambdaschool.spotifysongsuggester.models.ImageSong;
 import org.springframework.data.domain.Pageable;
 
-import java.awt.*;
 import java.util.List;
 
 public interface ImageSongService

@@ -27,17 +27,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * This can be removed from the base application. This controller contains
- * examples of how to handle other situations
- * <p>
- * > Reading another API
- * > Uploading a file into a db (in progress)
- * > Uploading a file into a file (in progress)
- * > sending an email from an endpoint (in progress)
- * > sending something via twilio from an endpoint (in progress)
- */
-
 @Loggable
 @RestController
 @RequestMapping("/data")
@@ -51,12 +40,6 @@ public class DataScienceAPIsController
 
     @Autowired
     private ImageSongService imageSongService;
-
-    // taken from https://openlibrary.org/dev/docs/api/books
-    // returns a list of books - you can include multiple ISBNs in a single request
-    // This API returns a map instead of the standard list
-    //
-    // localhost:2021/data/search/shake it off
 
     @ApiOperation(value = "Retrieves Songs by Search Query.", response = Song.class)
     @ApiResponses(value = {
@@ -74,7 +57,6 @@ public class DataScienceAPIsController
 
         String requestURL = "https://spotify-api-helper.herokuapp.com/songs/DReaI4d55IIaiD6P9/" + search;
 
-
         ParameterizedTypeReference<List<DSSearchSong>> responseType = new ParameterizedTypeReference<List<DSSearchSong>>()
         {
         };
@@ -82,14 +64,9 @@ public class DataScienceAPIsController
                 HttpMethod.GET,
                 null,
                 responseType);
-        System.out.println("/n" + "/n" + "*****TEST******" + "/n" + "/n");
-        System.out.println(responseEntity.getBody().toString());
-        System.out.println("/n" + "/n" + "*****TEST******" + "/n" + "/n");
-        System.out.println(responseEntity);
-        System.out.println("/n" + "/n" + "*****TEST******" + "/n" + "/n");
+
         List<DSSearchSong> ourSongs = responseEntity.getBody();
-
-
+      
         List <Song> newSongs = new ArrayList<>();
 
         for( DSSearchSong s : ourSongs)
@@ -128,33 +105,19 @@ public class DataScienceAPIsController
                 HttpMethod.GET,
                 null,
                 responseType);
-        System.out.println("/n" + "/n" + "*****TEST******" + "/n" + "/n");
-        System.out.println(responseEntity.getBody().toString());
-        System.out.println("/n" + "/n" + "*****TEST******" + "/n" + "/n");
-        System.out.println(responseEntity);
-        System.out.println("/n" + "/n" + "*****TEST******" + "/n" + "/n");
+
         List<DSSongWithImg> ourSongs = responseEntity.getBody();
 
-        return new ResponseEntity<>(ourSongs, HttpStatus.OK);
+        List <ImageSong> newSongs = new ArrayList<>();
 
-//        ParameterizedTypeReference<String> responseType = new ParameterizedTypeReference<>()
-//        {
-//        };
-//        ResponseEntity<String> responseEntity = restTemplate.exchange(requestURL, HttpMethod.GET, null, responseType);
-//        String jsonString = responseEntity.getBody().replace("\\","").replace("u00a0", "");
-//        jsonString = jsonString.substring(1, jsonString.length() - 1);
-//
-//        ObjectMapper mapper = new ObjectMapper();
-//        List<DSSongWithImg> list = mapper.readValue(jsonString, new TypeReference<List<DSSongWithImg>>() {});
-//
-//        System.out.println("/n" + "/n" + "*****TEST******" + "/n" + "/n");
-//        System.out.println(responseEntity.getBody().toString());
-//        System.out.println("/n" + "/n" + "*****TEST******" + "/n" + "/n");
-//        System.out.println(responseEntity);
-//        System.out.println("/n" + "/n" + "*****TEST******" + "/n" + "/n");
-//
-//        return new ResponseEntity<>(list,
-//                HttpStatus.OK);
+        for( DSSongWithImg s : ourSongs)
+        {
+            ImageSong s1 = new ImageSong(s.getId(), s.getSong_name(), s.getArtist(), s.getUri(), s.getLarge_image(), s.getMed_image(), s.getSmall_image());
+            newSongs.add(s1);
+            imageSongService.save(s1);
+        }
+
+        return new ResponseEntity<>(newSongs, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Retrieves Similar Songs by Search.", response = ImageSong.class)
@@ -164,6 +127,7 @@ public class DataScienceAPIsController
             )})
     @GetMapping(value = "/recs/search/{search}",
             produces = {"application/json"})
+
     public ResponseEntity<?> searchViaSearch(HttpServletRequest request, @PathVariable String search) throws IOException
     {
         logger.trace(request.getMethod().toUpperCase() + " " + request.getRequestURI() + " accessed");
@@ -232,40 +196,4 @@ public class DataScienceAPIsController
                 HttpStatus.OK);
 
     }
-
-
-//    @GetMapping(value = "/recs/{search}",
-//            produces = {"application/json"})
-//    public ResponseEntity<?> ListRecsGivenSearch(HttpServletRequest request,
-//                                                  @PathVariable
-//                                                          String search)
-//    {
-//        logger.trace(request.getMethod()
-//                .toUpperCase() + " " + request.getRequestURI() + " accessed");
-//
-//        String requestURL = "https://spotify-api-helper.herokuapp.com/auto_search/DReaI4d55IIaiD6P9/" + search;
-//
-//        return getResponseEntity(requestURL);
-//    }
-//
-//    private ResponseEntity<?> getResponseEntity(String requestURL)
-//    {
-//        ParameterizedTypeReference<List<DSSongWithImg>> responseType = new ParameterizedTypeReference<>()
-//        {
-//        };
-//        ResponseEntity<List<DSSongWithImg>> responseEntity = restTemplate.exchange(requestURL,
-//                HttpMethod.GET,
-//                null,
-//                responseType);
-//        System.out.println("/n" + "/n" + "*****TEST******" + "/n" + "/n");
-//        System.out.println(responseEntity.getBody().toString());
-//        System.out.println("/n" + "/n" + "*****TEST******" + "/n" + "/n");
-//        System.out.println(responseEntity);
-//        System.out.println("/n" + "/n" + "*****TEST******" + "/n" + "/n");
-//        List<DSSongWithImg> ourSongs = responseEntity.getBody();
-//
-//        System.out.println(ourSongs);
-//        return new ResponseEntity<>(ourSongs,
-//                HttpStatus.OK);
-//    }
 }

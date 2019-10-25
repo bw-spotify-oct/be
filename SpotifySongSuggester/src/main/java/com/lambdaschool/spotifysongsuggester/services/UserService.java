@@ -26,10 +26,6 @@ public interface UserService
     User update(User user,
                 long id);
 
-//    void addSongToFav(long userid, long songid);
-//
-//    void deleteSongFromFav(long userid, long songid);
-
     void addSongToFav(long userid, String trackid);
 
     void deleteSongFromFav(long userid, String trackid);

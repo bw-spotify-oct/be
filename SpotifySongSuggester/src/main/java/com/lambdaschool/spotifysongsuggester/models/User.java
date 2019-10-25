@@ -12,7 +12,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Loggable
 @Entity
 @Table(name = "users")
@@ -111,9 +110,9 @@ public class User extends Auditable
     {
         List<SimpleGrantedAuthority> rtnList = new ArrayList<>();
 
-            String myRole = "ROLE_" + "USER";
+        String myRole = "ROLE_" + "USER";
 
-            rtnList.add(new SimpleGrantedAuthority(myRole));
+        rtnList.add(new SimpleGrantedAuthority(myRole));
 
         return rtnList;
     }
