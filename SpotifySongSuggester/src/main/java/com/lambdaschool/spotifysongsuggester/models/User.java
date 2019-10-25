@@ -13,8 +13,6 @@ import javax.validation.constraints.Email;
 import java.util.ArrayList;
 import java.util.List;
 
-// User is considered the parent entity
-
 @Loggable
 @Entity
 @Table(name = "users")
@@ -38,14 +36,12 @@ public class User extends Auditable
     @OneToMany(mappedBy = "user",
             cascade = CascadeType.ALL)
     @JsonIgnoreProperties("user")
-    private List<Favorites> favorites = new ArrayList<>();
+    private List<Favorite> favorites = new ArrayList<>();
 
-//    @ManyToMany
-//    @JoinTable(name = "favorites",
-//            joinColumns = {@JoinColumn(name = "userid")},
-//            inverseJoinColumns = {@JoinColumn(name = "trackid")})
-//    @JsonIgnoreProperties("songs")
-//    private List<Song> favorites = new ArrayList<>();
+    @OneToMany(mappedBy = "user",
+            cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("user")
+    private List<FavoriteImageSong> favoriteImageSongs = new ArrayList<>();
 
     public User()
     {
@@ -60,11 +56,12 @@ public class User extends Auditable
 
     public User(String username,
                 String password,
-                List<Favorites> favorites)
+                List<Favorite> favorites, List<FavoriteImageSong> favoriteImageSongs)
     {
         this.username = username;
         this.password = password;
         this.favorites = favorites;
+        this.favoriteImageSongs = favoriteImageSongs;
     }
 
     public long getUserid()
@@ -114,21 +111,31 @@ public class User extends Auditable
     {
         List<SimpleGrantedAuthority> rtnList = new ArrayList<>();
 
-            String myRole = "ROLE_" + "USER";
+        String myRole = "ROLE_" + "USER";
 
-            rtnList.add(new SimpleGrantedAuthority(myRole));
+        rtnList.add(new SimpleGrantedAuthority(myRole));
 
         return rtnList;
     }
 
-    public List<Favorites> getFavorites()
+    public List<Favorite> getFavorites()
     {
         return favorites;
     }
 
-    public void setFavorites(List<Favorites> favorites)
+    public void setFavorites(List<Favorite> favorites)
     {
         this.favorites = favorites;
+    }
+
+    public List<FavoriteImageSong> getFavoriteImageSongs()
+    {
+        return favoriteImageSongs;
+    }
+
+    public void setFavoriteImageSongs(List<FavoriteImageSong> favoriteImageSongs)
+    {
+        this.favoriteImageSongs = favoriteImageSongs;
     }
 
     @Override
