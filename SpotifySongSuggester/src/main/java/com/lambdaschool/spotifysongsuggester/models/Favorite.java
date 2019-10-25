@@ -11,7 +11,8 @@ import java.util.Objects;
 @Loggable
 @Entity (name = "favorites")
 @Table(name = "favorites",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"userid", "songid"})})
+       uniqueConstraints = {@UniqueConstraint(columnNames = {"userid", "songid"})})
+
 public class Favorite extends Auditable implements Serializable
 {
     @ApiModelProperty(name = "userid", value = "primary key for User", required = true, example = "1")

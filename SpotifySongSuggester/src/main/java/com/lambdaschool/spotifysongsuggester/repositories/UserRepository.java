@@ -40,12 +40,12 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>
     @Modifying
     @Query(value = "DELETE FROM favoriteimagesongs WHERE userid = :userid AND imagesongid = :imagesongid")
     void deleteImageSongfromFavorites(long userid,
-                                      long imagesongid);
+                                 long imagesongid);
 
     @Transactional
     @Modifying
     @Query(value = "INSERT INTO favoriteimagesongs(userid, imagesongid) VALUES (:userid, :imagesongid)",
             nativeQuery = true)
     void insertImageSongintoFavorites(long userid,
-                                      long imagesongid);
+                                 long imagesongid);
 }
