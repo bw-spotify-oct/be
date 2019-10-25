@@ -71,20 +71,19 @@ public class DataScienceAPIsController
 
         for( DSSearchSong s : ourSongs)
         {
-            if(songService.findSongByTrackId(s.getId()).getUri().equalsIgnoreCase(s.getUri()))
-            {
-                newSongs.add(songService.findSongByTrackId(s.getId()));
-            }
-            else
-            {
+//            if(songService.findSongByTrackId(s.getId()).getUri().equalsIgnoreCase(s.getUri()))
+//            {
+//                newSongs.add(songService.findSongByTrackId(s.getId()));
+//            }
+//            else
+//            {
                 Song s1 = new Song(s.getId(), s.getSong_name(), s.getArtist(), s.getUri());
                 newSongs.add(s1);
-                songService.save(s1);
-            }
+//                songService.save(s1);
+//            }
         }
 
         System.out.println(ourSongs);
-        System.out.println(newSongs);
         return new ResponseEntity<>(newSongs,
                 HttpStatus.OK);
     }
@@ -119,16 +118,16 @@ public class DataScienceAPIsController
 
         for( DSSongWithImg s : ourSongs)
         {
-            if(imageSongService.findImageSongByTrackId(s.getId()).getUri().equalsIgnoreCase(s.getUri()))
-            {
-                newSongs.add(imageSongService.findImageSongByTrackId(s.getId()));
-            }
-            else
-            {
+//            if(imageSongService.findImageSongByTrackId(s.getId()).getUri().equalsIgnoreCase(s.getUri()))
+//            {
+//                newSongs.add(imageSongService.findImageSongByTrackId(s.getId()));
+//            }
+//            else
+//            {
                 ImageSong s1 = new ImageSong(s.getId(), s.getSong_name(), s.getArtist(), s.getUri(), s.getLarge_image(), s.getMed_image(), s.getSmall_image());
                 newSongs.add(s1);
-                imageSongService.save(s1);
-            }
+//                imageSongService.save(s1);
+//            }
         }
 
         return new ResponseEntity<>(newSongs, HttpStatus.OK);
@@ -161,16 +160,16 @@ public class DataScienceAPIsController
 
         for( DSSongWithImg s : songWithImgList)
         {
-            if(imageSongService.findImageSongByTrackId(s.getId()).getUri().equalsIgnoreCase(s.getUri()))
-            {
-                newSongs.add(imageSongService.findImageSongByTrackId(s.getId()));
-            }
-            else
-            {
+//            if(imageSongService.findImageSongByTrackId(s.getId()).getUri().equalsIgnoreCase(s.getUri()))
+//            {
+//                newSongs.add(imageSongService.findImageSongByTrackId(s.getId()));
+//            }
+//            else
+//            {
                 ImageSong s1 = new ImageSong(s.getId(), s.getSong_name(), s.getArtist(), s.getUri(), s.getLarge_image(), s.getMed_image(), s.getSmall_image());
                 newSongs.add(s1);
-                imageSongService.save(s1);
-            }
+//                imageSongService.save(s1);
+//            }
         }
 
         System.out.println(songWithImgList);
@@ -206,16 +205,16 @@ public class DataScienceAPIsController
 
         for( DSSongWithImg s : songWithImgList)
         {
-            if(imageSongService.findImageSongByTrackId(s.getId()).getUri().equalsIgnoreCase(s.getUri()))
-            {
-                newSongs.add(imageSongService.findImageSongByTrackId(s.getId()));
-            }
-            else
-            {
+//            if(imageSongService.findImageSongByTrackId(s.getId()).getUri().equalsIgnoreCase(s.getUri()))
+//            {
+//                newSongs.add(imageSongService.findImageSongByTrackId(s.getId()));
+//            }
+//            else
+//            {
                 ImageSong s1 = new ImageSong(s.getId(), s.getSong_name(), s.getArtist(), s.getUri(), s.getLarge_image(), s.getMed_image(), s.getSmall_image());
                 newSongs.add(s1);
-                imageSongService.save(s1);
-            }
+//                imageSongService.save(s1);
+//            }
         }
 
         System.out.println(songWithImgList);

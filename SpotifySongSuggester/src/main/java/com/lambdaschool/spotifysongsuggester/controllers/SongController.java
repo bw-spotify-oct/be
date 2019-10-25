@@ -2,7 +2,9 @@ package com.lambdaschool.spotifysongsuggester.controllers;
 
 import com.lambdaschool.spotifysongsuggester.logging.Loggable;
 import com.lambdaschool.spotifysongsuggester.models.ErrorDetail;
+import com.lambdaschool.spotifysongsuggester.models.ImageSong;
 import com.lambdaschool.spotifysongsuggester.models.Song;
+import com.lambdaschool.spotifysongsuggester.services.ImageSongService;
 import com.lambdaschool.spotifysongsuggester.services.SongService;
 import io.swagger.annotations.*;
 import org.slf4j.Logger;
@@ -29,6 +31,10 @@ public class SongController
 {
     @Autowired
     private SongService songService;
+
+    @Autowired
+    private ImageSongService imageSongService;
+
     private static final Logger logger = LoggerFactory.getLogger(SongService.class);
 
 
@@ -109,5 +115,27 @@ public class SongController
         List<Song> myUsers = songService.findAll(pageable);
         return new ResponseEntity<>(myUsers,
                 HttpStatus.OK);
+    }
+
+    //Image Song
+    @ApiOperation(value = "Adds a New Song.", notes = "The newly created song id will be sent in the location header.", response = void.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "New Song Added Successfully", response = void.class),
+            @ApiResponse(code = 500, message = "Error Adding New Song", response = ErrorDetail.class
+            )})
+    @PostMapping(value = "/song/images",
+            consumes = {"application/json"},
+            produces = {"application/json"})
+    public ResponseEntity<?> addNewImageSong( HttpServletRequest request, @Valid @RequestBody ImageSong imageSong) throws URISyntaxException
+    {
+        logger.info(request.getMethod() + " " + request.getRequestURI() + " accessed");
+
+        ImageSong imageSong1 = imageSongService.save(imageSong);
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        URI newSongURI = ServletUriComponentsBuilder.fromCurrentRequest().path("/{songid}").buildAndExpand(imageSong1.getImagesongid()).toUri();
+        responseHeaders.setLocation(newSongURI);
+
+        return new ResponseEntity<>(null, responseHeaders, HttpStatus.CREATED);
     }
 }
