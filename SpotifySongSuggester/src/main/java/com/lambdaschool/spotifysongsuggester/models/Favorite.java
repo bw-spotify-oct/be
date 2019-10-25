@@ -12,7 +12,7 @@ import java.util.Objects;
 @Entity (name = "favorites")
 @Table(name = "favorites",
        uniqueConstraints = {@UniqueConstraint(columnNames = {"userid", "songid"})})
-public class Favorites extends Auditable implements Serializable
+public class Favorite extends Auditable implements Serializable
 {
     @ApiModelProperty(name = "userid", value = "primary key for User", required = true, example = "1")
     @Id
@@ -34,11 +34,11 @@ public class Favorites extends Auditable implements Serializable
 //    @JsonIgnoreProperties("favorites")
 //    private Song song;
 
-    public Favorites()
+    public Favorite()
     {
     }
 
-    public Favorites(User user, Song song)
+    public Favorite(User user, Song song)
     {
         this.user = user;
         this.song = song;
@@ -71,11 +71,11 @@ public class Favorites extends Auditable implements Serializable
         {
             return true;
         }
-        if (!(o instanceof Favorites))
+        if (!(o instanceof Favorite))
         {
             return false;
         }
-        Favorites favorites = (Favorites) o;
+        Favorite favorites = (Favorite) o;
         return getUser().equals(favorites.getUser()) &&
                 getSong().equals(favorites.getSong());
     }

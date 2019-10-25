@@ -1,6 +1,5 @@
 package com.lambdaschool.spotifysongsuggester;
 
-import com.lambdaschool.spotifysongsuggester.models.Favorites;
 import com.lambdaschool.spotifysongsuggester.models.Song;
 import com.lambdaschool.spotifysongsuggester.models.User;
 import com.lambdaschool.spotifysongsuggester.services.SongService;
@@ -38,10 +37,10 @@ public class SeedData implements CommandLineRunner
                 "password");
         userService.save(u3);
 
-        Song s1 = new Song("498ZVInMGDkmmNVpSWqHiZ", "May We All", "Florida Georgia Line" );
-        Song s2 = new Song("37KWDhJ3fyBAFVcC0Hutan", "May Be", "Crooks UK" );
-        Song s3 = new Song("6Zm5LE6EcJsec8pvua0nt9", "May We All Someday Meedt Again", "The Fureys" );
-        Song s4 = new Song("6GIei0QWZjbrNWNwtTpiQL", "May We All - Commentary", "Florida Georgia Line" );
+        Song s1 = new Song("498ZVInMGDkmmNVpSWqHiZ", "May We All", "Florida Georgia Line", "spotify:track:498ZVInMGDkmmNVpSWqHiZ" );
+        Song s2 = new Song("37KWDhJ3fyBAFVcC0Hutan", "May Be", "Crooks UK", "spotify:track:37KWDhJ3fyBAFVcC0Hutan" );
+        Song s3 = new Song("6Zm5LE6EcJsec8pvua0nt9", "May We All Someday Meedt Again", "The Fureys", "spotify:track:6Zm5LE6EcJsec8pvua0nt9" );
+        Song s4 = new Song("6GIei0QWZjbrNWNwtTpiQL", "May We All - Commentary", "Florida Georgia Line", "spotify:track:6GIei0QWZjbrNWNwtTpiQL" );
 
         songService.save(s1);
         songService.save(s2);

@@ -80,6 +80,7 @@ public class SongServiceImpl implements SongService
         song1.setSongid(song.getSongid());
         song1.setArtist(song.getArtist());
         song1.setSong_name(song.getSong_name());
+        song1.setUri(song.getUri());
 
         return songrepos.save(song1);
     }
@@ -116,6 +117,11 @@ public class SongServiceImpl implements SongService
             if(song.getSong_name() != null)
             {
                 currentSong.setSong_name(song.getSong_name().toLowerCase());
+            }
+
+            if(song.getUri() != null)
+            {
+                currentSong.setUri(song.getUri().toLowerCase());
             }
 
             return songrepos.save(currentSong);

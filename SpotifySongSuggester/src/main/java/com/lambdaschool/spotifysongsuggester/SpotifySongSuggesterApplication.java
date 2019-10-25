@@ -33,8 +33,8 @@ public class SpotifySongSuggesterApplication
 
     public static void main(String[] args)
     {
-        checkEnvironmentVariable("OAUTHCLIENTID");
-        checkEnvironmentVariable("OAUTHCLIENTSECRET");
+//        checkEnvironmentVariable("OAUTHCLIENTID");
+//        checkEnvironmentVariable("OAUTHCLIENTSECRET");
 
         if (!stop)
         {
