@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Loggable
-@Service(value = "imagesongService")
+@Service(value = "imageSongService")
 public class ImageSongServiceImpl implements ImageSongService
 {
 
@@ -62,6 +62,9 @@ public class ImageSongServiceImpl implements ImageSongService
         imagesong1.setArtist(imagesong.getArtist());
         imagesong1.setSong_name(imagesong.getSong_name());
         imagesong1.setUri(imagesong.getUri());
+        imagesong1.setLarge_image(imagesong.getLarge_image());
+        imagesong1.setMed_image(imagesong.getMed_image());
+        imagesong1.setSmall_image(imagesong.getSmall_image());
 
         return imagesongrepos.save(imagesong1);
     }
@@ -103,6 +106,21 @@ public class ImageSongServiceImpl implements ImageSongService
             if(imagesong.getUri() != null)
             {
                 currentSong.setUri(imagesong.getUri().toLowerCase());
+            }
+
+            if(imagesong.getLarge_image() != null)
+            {
+                currentSong.setLarge_image(imagesong.getLarge_image());
+            }
+
+            if(imagesong.getMed_image() != null)
+            {
+                currentSong.setMed_image(imagesong.getMed_image());
+            }
+
+            if(imagesong.getSmall_image() != null)
+            {
+                currentSong.setSmall_image(imagesong.getSmall_image());
             }
 
             return imagesongrepos.save(currentSong);

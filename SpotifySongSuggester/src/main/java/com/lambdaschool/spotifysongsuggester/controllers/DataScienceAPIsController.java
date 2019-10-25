@@ -37,9 +37,10 @@ public class DataScienceAPIsController
 
     @Autowired
     private SongService songService;
+
+    @Autowired
     private ImageSongService imageSongService;
 
-    // https://spotify-song-suggester-app.herokuapp.com/data/search/{search}
     @ApiOperation(value = "Retrieves Songs by Search Query.", response = Song.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Songs Found", response = Song.class),
@@ -81,13 +82,12 @@ public class DataScienceAPIsController
                 HttpStatus.OK);
     }
 
-    // https://spotify-song-suggester-app.herokuapp.com/data/recs/{trackid}
-    @ApiOperation(value = "Retrieves Similar Songs by Track Id.", response = Song.class)
+    @ApiOperation(value = "Retrieves Similar Songs by Track Id.", response = DSSongWithImg.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Songs Found", response = Song.class),
+            @ApiResponse(code = 200, message = "Songs Found", response = DSSongWithImg.class),
             @ApiResponse(code = 404, message = "Songs Not Found, Internal Data Server Error", response = ErrorDetail.class
             )})
-    @GetMapping(value = "/recs/{trackid}",
+    @GetMapping(value = "/recs/trackid/{trackid}",
             produces = {"application/json"})
     public ResponseEntity<?> ListRecsGivenTrackId(HttpServletRequest request,
                                                   @PathVariable
@@ -108,41 +108,55 @@ public class DataScienceAPIsController
 
         List<DSSongWithImg> ourSongs = responseEntity.getBody();
 
-        System.out.println(ourSongs);
-        return new ResponseEntity<>(ourSongs,
-                HttpStatus.OK);
+        List <ImageSong> newSongs = new ArrayList<>();
+
+        for( DSSongWithImg s : ourSongs)
+        {
+            ImageSong s1 = new ImageSong(s.getId(), s.getSong_name(), s.getArtist(), s.getUri(), s.getLarge_image(), s.getMed_image(), s.getSmall_image());
+            newSongs.add(s1);
+            imageSongService.save(s1);
+        }
+
+        return new ResponseEntity<>(newSongs, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Retrieves Similar Songs by Search Query", response = Song.class)
+    @ApiOperation(value = "Retrieves Similar Songs by Search.", response = ImageSong.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Songs Found", response = Song.class),
+            @ApiResponse(code = 200, message = "Songs Found", response = ImageSong.class),
             @ApiResponse(code = 404, message = "Songs Not Found, Internal Data Server Error", response = ErrorDetail.class
             )})
-    @GetMapping(value = "/recs/{search}",
+    @GetMapping(value = "/recs/search/{search}",
             produces = {"application/json"})
-    public ResponseEntity<?> ListRecsGivenSearch(HttpServletRequest request,
-                                                 @PathVariable
-                                                         String search)
+    public ResponseEntity<?> RecsViaSearch(HttpServletRequest request, @PathVariable String search) throws IOException
     {
-        logger.trace(request.getMethod()
-                .toUpperCase() + " " + request.getRequestURI() + " accessed");
+        logger.trace(request.getMethod().toUpperCase() + " " + request.getRequestURI() + " accessed");
 
         String requestURL = "https://spotify-api-helper.herokuapp.com/auto_search/DReaI4d55IIaiD6P9/" + search;
 
-        ParameterizedTypeReference<List<DSSongWithImg>> responseType = new ParameterizedTypeReference<List<DSSongWithImg>>()
+        ParameterizedTypeReference<String> responseType = new ParameterizedTypeReference<>()
         {
         };
-        ResponseEntity<List<DSSongWithImg>> responseEntity = restTemplate.exchange(requestURL,
-                HttpMethod.GET,
-                null,
-                responseType);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(requestURL, HttpMethod.GET, null, responseType);
+        String jsonString = responseEntity.getBody();
 
-        List<DSSongWithImg> ourSongs = responseEntity.getBody();
+        ObjectMapper mapper = new ObjectMapper();
+        List<DSSongWithImg> songWithImgList = mapper.readValue(jsonString, new TypeReference<List<DSSongWithImg>>() {});
 
-        System.out.println(ourSongs);
-        return new ResponseEntity<>(ourSongs,
+        List <ImageSong> newSongs = new ArrayList<>();
+
+        for( DSSongWithImg s : songWithImgList)
+        {
+            ImageSong s1 = new ImageSong(s.getId(), s.getSong_name(), s.getArtist(), s.getUri(), s.getLarge_image(), s.getMed_image(), s.getSmall_image());
+            newSongs.add(s1);
+            imageSongService.save(s1);
+        }
+
+        System.out.println(songWithImgList);
+        System.out.println(newSongs);
+        return new ResponseEntity<>(newSongs,
                 HttpStatus.OK);
     }
+
 
     @ApiOperation(value = "Retrieves Songs with Album Art Given Search.", response = Song.class)
     @ApiResponses(value = {
@@ -181,6 +195,4 @@ public class DataScienceAPIsController
                 HttpStatus.OK);
 
     }
-
-
 }
