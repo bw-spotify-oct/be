@@ -14,8 +14,6 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter
 {
-//    static final String CLIENT_ID = System.getenv("OAUTHCLIENTID"); // read from environment variable
-//    static final String CLIENT_SECRET = System.getenv("OAUTHCLIENTSECRET"); // read from environment variable
      static final String CLIENT_ID = "lambda-client";
      static final String CLIENT_SECRET = "lambda-secret";
 
